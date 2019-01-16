@@ -15,6 +15,11 @@ org.ekstep.contenteditor.basePlugin.extend({
      */
     topicData: [],
     /**
+     * set framework to get topics
+     * @memberof topicselector
+     */
+    framework: ecEditor.getContext('resource_framework') || ecEditor.getContext('framework'),
+    /**
      * Api response for categories
      * @memberof topicselector
      */
@@ -166,7 +171,7 @@ org.ekstep.contenteditor.basePlugin.extend({
      */
     getCategory: function(callback) {
         var instance = this;
-        var frameworkId = org.ekstep.contenteditor.api.getContext('framework') || ecEditor.getService('content').getContentMeta(org.ekstep.contenteditor.api.getContext('contentId')).framework;
+        var frameworkId = instance.framework || ecEditor.getService('content').getContentMeta(org.ekstep.contenteditor.api.getContext('contentId')).framework;
         if (frameworkId){
             ecEditor.getService(ServiceConstants.META_SERVICE).getCategorys(frameworkId, function(error, response) {
                 if (!error) {
