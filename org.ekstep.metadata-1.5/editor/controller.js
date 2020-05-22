@@ -234,16 +234,13 @@ angular.module('org.ekstep.metadataform', []).controller('metadataForm', ['$scop
                 if (groupdFields.length) {
                     _.forEach(groupdFields, function(value, key) {
                         $scope.updateDropDownList(value.category, _.map(value.name, i => _.pick(i, 'name')));
-                        $scope.$safeApply();
                     })
                 } else {
                     $scope.updateDropDownList(id, [])
-                    $scope.$safeApply();
                 }
             });
+            $scope.$safeApply();
         }
-
-
     }
 
 
@@ -536,6 +533,10 @@ angular.module('org.ekstep.metadataform', []).controller('metadataForm', ['$scop
                 }
             }
 
+            if(_.isUndefined($scope.originalContentMeta['board']) && ecEditor.getContext('board')){
+                $scope.contentMeta['board'] = ecEditor.getContext('board').toString();
+            }
+            
             if(!_.isUndefined($scope.originalContentMeta['contentType']) && !_.isEmpty($scope.originalContentMeta['contentType']) && $scope.originalContentMeta['contentType'] === 'Resource'){  
                 $scope.contentMeta['contentType'] = '';
             }
@@ -546,31 +547,9 @@ angular.module('org.ekstep.metadataform', []).controller('metadataForm', ['$scop
                 $scope.fields = config.fields;
             } else if($scope.tempalteName === 'defaultTemplate'){
                 var displayScore = _.filter(config.fields, { 'code': 'displayScore' })[0];
-                if(_.isUndefined(displayScore)){
-                    config.fields.push({
-                        "code": "displayScore",
-                        "dataType": "boolean",
-                        "description": "Display Score",
-                        "editable": true,
-                        "inputType": "select",
-                        "range": [{
-                            "name": "Yes",
-                            "value": true
-                        },{
-                            "name": "No",
-                            "value": false 
-                        }
-                        ],
-                        "label": "Display Score",
-                        "name": "Display Score",
-                        "placeholder": "Display Score",
-                        "renderingHints": {},
-                        "required": false,
-                        "visible": true,
-                        "index": 20
-                        })
+                if(!_.isUndefined(displayScore)){
+                    $scope.contentMeta['displayScore'] = !_.isUndefined($scope.contentMeta['displayScore']) ? ($scope.contentMeta['displayScore']).toString() : "true";
                 }
-                $scope.contentMeta['displayScore'] = !_.isUndefined($scope.contentMeta['displayScore']) ? ($scope.contentMeta['displayScore']).toString() : "true";
             }
             
             if(!_.isUndefined($scope.originalContentMeta['copyright'])){
@@ -578,6 +557,7 @@ angular.module('org.ekstep.metadataform', []).controller('metadataForm', ['$scop
             }else if(ecEditor.getContext('user') &&  ecEditor.getContext('user').organisations){
                 $scope.contentMeta['copyright'] = config.editMode ? _.values(ecEditor.getContext('user').organisations).join(", ") : "";
             }
+
             if(!_.isUndefined($scope.originalContentMeta['contributors']) && !_.isEmpty($scope.originalContentMeta['contributors'])){
                 var res = $scope.contentMeta['contributors'].split(", ");
                 if(_.isUndefined($scope.contentMeta['attributions'])){
